@@ -18,5 +18,13 @@
     <ClCompile Include="AngleGLES2.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="glload.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="glload.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

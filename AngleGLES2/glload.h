@@ -1,6 +1,6 @@
 #ifndef __GLLOAD_H__
 #define __GLLOAD_H__
-#include "GLES2/gl2.h"
+#include <GLES2/gl2.h> // https://www.khronos.org/registry/OpenGL/api/GLES2/gl2.h
 #include "SDL.h"
 #include <stdio.h>
 

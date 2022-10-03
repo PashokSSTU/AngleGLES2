@@ -7,7 +7,7 @@ extern "C" {
 
 #define Assert(x) do {if (!(x)) __debugbreak(); } while (0)
 
-const char* vertexShaderSource = "#version 460 core\n"
+const char* vertexShaderSource = "#version 330 core\n"
 "layout (location = 0) in vec3 aPos;\n"
 "layout (location = 1) in vec4 aCol;\n"
 "out vec4 aColor;\n"
@@ -17,7 +17,7 @@ const char* vertexShaderSource = "#version 460 core\n"
 "   aColor = aCol;\n"
 "}\0";
 
-const char* fragShaderSource = "#version 460 core\n"
+const char* fragShaderSource = "#version 330 core\n"
 "in vec4 aColor;\n"
 "out vec4 FragColor;\n"
 "void main()\n"
@@ -30,14 +30,16 @@ int main(int argc, char* argv[])
 {
     Assert(SDL_Init(SDL_INIT_VIDEO) == 0);
 
-    SDL_Window* w = SDL_CreateWindow("test", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
-        640, 480, SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN);
-
 
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_ES);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 2);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0);
     SDL_GL_SetAttribute(SDL_GL_ACCELERATED_VISUAL, 1);
+
+    SDL_SetHint("SDL_HINT_OPENGL_ES_DRIVER", "1");
+
+    SDL_Window* w = SDL_CreateWindow("test", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
+        640, 480, SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN);
 
     Assert(w);
 
@@ -57,6 +59,7 @@ int main(int argc, char* argv[])
     std::cout << "GL_VERSION = " << bglGetString(GL_VERSION) << std::endl;
     std::cout << "GL_VENDOR = " << bglGetString(GL_VENDOR) << std::endl;
     std::cout << "GL_RENDERER = " << bglGetString(GL_RENDERER) << std::endl;
+    std::cout << "GL_RENDERER = " << bglGetString(GL_SHADING_LANGUAGE_VERSION) << std::endl;
 
     GLuint vertexShader;
     vertexShader = bglCreateShader(GL_VERTEX_SHADER);

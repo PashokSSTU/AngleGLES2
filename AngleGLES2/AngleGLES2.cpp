@@ -4,27 +4,9 @@
 extern "C" {
 #include "glload.h"
 }
+#include "Shader.h"
 
 #define Assert(x) do {if (!(x)) __debugbreak(); } while (0)
-
-const char* vertexShaderSource = "#version 330 core\n"
-"layout (location = 0) in vec3 aPos;\n"
-"layout (location = 1) in vec4 aCol;\n"
-"out vec4 aColor;\n"
-"void main()\n"
-"{\n"
-"   gl_Position = vec4(aPos, 1.0);\n"
-"   aColor = aCol;\n"
-"}\0";
-
-const char* fragShaderSource = "#version 330 core\n"
-"in vec4 aColor;\n"
-"out vec4 FragColor;\n"
-"void main()\n"
-"{\n"
-"   FragColor = aColor;\n"
-"}\0";
-
 
 int main(int argc, char* argv[])
 {
@@ -49,11 +31,6 @@ int main(int argc, char* argv[])
     Assert(SDL_GL_MakeCurrent(w, ctx) == 0);
     SDL_GL_SetSwapInterval(1);
 
-    //if (SDL_GL_LoadLibrary("libGLESv2.dll") < 0)
-    //{
-    //    std::cout << SDL_GetError() << std::endl;
-    //}
-
     LoadFunctions();
 
     std::cout << "GL_VERSION = " << bglGetString(GL_VERSION) << std::endl;
@@ -61,47 +38,7 @@ int main(int argc, char* argv[])
     std::cout << "GL_RENDERER = " << bglGetString(GL_RENDERER) << std::endl;
     std::cout << "GL_RENDERER = " << bglGetString(GL_SHADING_LANGUAGE_VERSION) << std::endl;
 
-    GLuint vertexShader;
-    vertexShader = bglCreateShader(GL_VERTEX_SHADER);
-    bglShaderSource(vertexShader, 1, &vertexShaderSource, NULL);
-    bglCompileShader(vertexShader);
-
-    int success;
-    char infoLog[512];
-    bglGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
-    if (!success)
-    {
-        bglGetShaderInfoLog(vertexShader, 512, NULL, infoLog);
-        std::cout << "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n" << infoLog << std::endl;
-    }
-
-    GLuint fragmentShader;
-    fragmentShader = bglCreateShader(GL_FRAGMENT_SHADER);
-    bglShaderSource(fragmentShader, 1, &fragShaderSource, NULL);
-    bglCompileShader(fragmentShader);
-
-    bglGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &success);
-    if (!success)
-    {
-        bglGetShaderInfoLog(fragmentShader, 512, NULL, infoLog);
-        std::cout << "ERROR::SHADER::FRAGMENT::COMPILATION_FAILED\n" << infoLog << std::endl;
-    }
-
-    GLuint shaderProgram;
-    shaderProgram = bglCreateProgram();
-    bglAttachShader(shaderProgram, vertexShader);
-    bglAttachShader(shaderProgram, fragmentShader);
-    bglLinkProgram(shaderProgram);
-
-    bglGetProgramiv(shaderProgram, GL_LINK_STATUS, &success);
-    if (!success)
-    {
-        bglGetProgramInfoLog(shaderProgram, 512, NULL, infoLog);
-        std::cout << "ERROR::PROGRAMM::LINKING_FAILED\n" << infoLog << std::endl;
-    }
-
-    bglDeleteShader(vertexShader);
-    bglDeleteShader(fragmentShader);
+    Shader shaders("Shaders/vertexSample.vsh", "Shaders/fragmentSample.fsh");
 
     float verticies[] = {
         -0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f,
@@ -139,7 +76,7 @@ int main(int argc, char* argv[])
         bglClearColor(0, 0, 0, 1);
         bglClear(GL_COLOR_BUFFER_BIT);
 
-        bglUseProgram(shaderProgram);
+        shaders.use();
         bglBindBuffer(GL_ARRAY_BUFFER, VBO);
         bglDrawArrays(GL_TRIANGLES, 0, 3);
        

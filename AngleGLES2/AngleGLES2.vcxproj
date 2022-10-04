@@ -135,9 +135,11 @@
   <ItemGroup>
     <ClCompile Include="AngleGLES2.cpp" />
     <ClCompile Include="glload.c" />
+    <ClCompile Include="Shader.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="glload.h" />
+    <ClInclude Include="Shader.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

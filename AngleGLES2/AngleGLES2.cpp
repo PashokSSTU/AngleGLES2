@@ -1,6 +1,11 @@
 #include <iostream>
 #include <SDL.h>
+
 #include <GLES2/gl2.h> // https://www.khronos.org/registry/OpenGL/api/GLES2/gl2.h
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
+
 extern "C" {
 #include "glload.h"
 }
@@ -40,10 +45,13 @@ int main(int argc, char* argv[])
 
     Shader shaders("Shaders/vertexSample.vsh", "Shaders/fragmentSample.fsh");
 
+    glm::mat4 trans = glm::mat4(1.0f);
+    trans = glm::rotate(trans, glm::radians(90.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+
     float verticies[] = {
         -0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f,
          0.5f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f,
-         0.0f,  0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f,
+         0.0f,  0.366f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f,
     };
 
     GLuint VBO;
@@ -75,8 +83,9 @@ int main(int argc, char* argv[])
 
         bglClearColor(0, 0, 0, 1);
         bglClear(GL_COLOR_BUFFER_BIT);
-
+        
         shaders.use();
+        shaders.setMat4("transform", trans);
         bglBindBuffer(GL_ARRAY_BUFFER, VBO);
         bglDrawArrays(GL_TRIANGLES, 0, 3);
        

@@ -45,8 +45,18 @@ int main(int argc, char* argv[])
 
     Shader shaders("Shaders/vertexSample.vsh", "Shaders/fragmentSample.fsh");
 
-    glm::mat4 trans = glm::mat4(1.0f);
-    trans = glm::rotate(trans, glm::radians(90.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+    glm::mat4 model = glm::mat4(1.0f);
+    model = glm::rotate(model, glm::radians(-55.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+
+    glm::mat4 view = glm::mat4(1.0f);
+    view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
+
+    glm::mat4 projection;
+    projection = glm::perspective(glm::radians(45.0f), 800.0f / 600.0f, 0.1f, 100.0f);
+
+
+
+
 
     float verticies[] = {
         -0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f,
@@ -85,7 +95,9 @@ int main(int argc, char* argv[])
         bglClear(GL_COLOR_BUFFER_BIT);
         
         shaders.use();
-        shaders.setMat4("transform", trans);
+        shaders.setMat4v("model", model);
+        shaders.setMat4v("view", view);
+        shaders.setMat4v("projection", projection);
         bglBindBuffer(GL_ARRAY_BUFFER, VBO);
         bglDrawArrays(GL_TRIANGLES, 0, 3);
        

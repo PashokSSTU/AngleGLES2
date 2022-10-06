@@ -61,14 +61,26 @@ int main(int argc, char* argv[])
     float verticies[] = {
         -0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f,
          0.5f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f,
-         0.0f,  0.366f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f,
+         0.5f,  0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f,
+        -0.5f,  0.5f, 0.0f, 1.0f, 0.0f, 1.0f, 1.0f,
+    };
+
+    unsigned int indices[] = {
+        0, 1, 3,
+        1, 2, 3
     };
 
     GLuint VBO;
+    GLuint EBO;
 
     bglGenBuffers(1, &VBO);
+    bglGenBuffers(1, &EBO);
+    
     bglBindBuffer(GL_ARRAY_BUFFER, VBO);
     bglBufferData(GL_ARRAY_BUFFER, sizeof(verticies), verticies, GL_STATIC_DRAW);
+
+    bglBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+    bglBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
     bglVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 7 * sizeof(float), (void*)0);
     bglEnableVertexAttribArray(0);
@@ -99,7 +111,8 @@ int main(int argc, char* argv[])
         shaders.setMat4v("view", view);
         shaders.setMat4v("projection", projection);
         bglBindBuffer(GL_ARRAY_BUFFER, VBO);
-        bglDrawArrays(GL_TRIANGLES, 0, 3);
+        bglBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+        bglDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
        
 
         SDL_GL_SwapWindow(w);

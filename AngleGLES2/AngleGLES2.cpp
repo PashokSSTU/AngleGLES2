@@ -2,14 +2,13 @@
 #include <SDL.h>
 
 #include <GLES2/gl2.h> // https://www.khronos.org/registry/OpenGL/api/GLES2/gl2.h
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtc/type_ptr.hpp>
 
 extern "C" {
 #include "glload.h"
+#include "linmath.h"
+#include "SimpleCShader.h"
 }
-#include "Shader.h"
+//#include "Shader.h"
 
 #define Assert(x) do {if (!(x)) __debugbreak(); } while (0)
 
@@ -43,18 +42,14 @@ int main(int argc, char* argv[])
     std::cout << "GL_RENDERER = " << bglGetString(GL_RENDERER) << std::endl;
     std::cout << "GL_RENDERER = " << bglGetString(GL_SHADING_LANGUAGE_VERSION) << std::endl;
 
-    Shader shaders("Shaders/vertexSample.vsh", "Shaders/fragmentSample.fsh");
-
-    glm::mat4 model = glm::mat4(1.0f);
-    model = glm::rotate(model, glm::radians(-55.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-
-    glm::mat4 view = glm::mat4(1.0f);
-    view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
-
-    glm::mat4 projection;
-    projection = glm::perspective(glm::radians(45.0f), 800.0f / 600.0f, 0.1f, 100.0f);
+    //Shader shaders("Shaders/vertexSample.vsh", "Shaders/fragmentSample.fsh");
+    loadShaders("Shaders/vertexSample.vsh", "Shaders/fragmentSample.fsh");
 
 
+    mat4x4 transform;
+    mat4x4_identity(transform);
+    mat4x4 rotate;
+    mat4x4_rotate_Z(rotate, transform, M_PI / 2);
 
 
 
@@ -106,10 +101,12 @@ int main(int argc, char* argv[])
         bglClearColor(0, 0, 0, 1);
         bglClear(GL_COLOR_BUFFER_BIT);
         
-        shaders.use();
-        shaders.setMat4v("model", model);
-        shaders.setMat4v("view", view);
-        shaders.setMat4v("projection", projection);
+        //shaders.use();
+        //bglUniformMatrix4fv(bglGetUniformLocation(shaders.ID, "transform"), 1, GL_FALSE, &rotate[0][0]);
+
+        useProgram();
+        setUniformMat4x4("transform", &rotate[0][0]);
+
         bglBindBuffer(GL_ARRAY_BUFFER, VBO);
         bglBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
         bglDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);

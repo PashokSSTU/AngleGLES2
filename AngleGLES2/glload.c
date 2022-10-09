@@ -198,6 +198,7 @@ GLclampf ALPHA_TEST_REFERENCE = 0.0f;
 void bglAlphaFunc(GLenum func, GLclampf ref)
 {
     ALPHA_TEST_MODE = func;
+    ALPHA_TEST_REFERENCE = ref;
 }
 
 void bglEnable(GLenum cap)

@@ -60,10 +60,10 @@ int main(int argc, char* argv[])
     //result => rotate +=> translate:  result = rotate * translate
 
     float verticies[] = {
-        -0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f,
-         0.5f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f,
-         0.5f,  0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f,
-        -0.5f,  0.5f, 0.0f, 1.0f, 0.0f, 1.0f, 1.0f,
+        -0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 0.32f,
+         0.5f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 0.32f,
+         0.5f,  0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 0.32f,
+        -0.5f,  0.5f, 0.0f, 1.0f, 0.0f, 1.0f, 0.32f,
     };
 
     unsigned int indices[] = {
@@ -86,7 +86,7 @@ int main(int argc, char* argv[])
     bglVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 7 * sizeof(float), (void*)0);
     bglEnableVertexAttribArray(0);
 
-    bglVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 7 * sizeof(float), (void*)(3 * sizeof(float)));
+    bglVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 7 * sizeof(float), (void*)(3 * sizeof(float)));
     bglEnableVertexAttribArray(1);
 
     bglBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -104,8 +104,12 @@ int main(int argc, char* argv[])
             }
         }
 
-        bglClearColor(0, 0, 0, 1);
+        bglClearColor(0, 0, 0, 0);
         bglClear(GL_COLOR_BUFFER_BIT);
+
+        bglEnable(GL_ALPHA_TEST);
+
+        bglAlphaFunc(GL_LEQUAL, 0.32f);
         
         //shaders.use();
         //bglUniformMatrix4fv(bglGetUniformLocation(shaders.ID, "transform"), 1, GL_FALSE, &rotate[0][0]);
@@ -119,6 +123,8 @@ int main(int argc, char* argv[])
         bglBindBuffer(GL_ARRAY_BUFFER, VBO);
         bglBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
         bglDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+
+        bglDisable(GL_ALPHA_TEST);
        
 
         SDL_GL_SwapWindow(w);

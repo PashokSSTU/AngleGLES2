@@ -48,10 +48,16 @@ int main(int argc, char* argv[])
 
     mat4x4 transform;
     mat4x4_identity(transform);
-    mat4x4 rotate;
-    mat4x4_rotate_Z(rotate, transform, M_PI / 2);
+    mat4x4_rotate_Z(transform, transform, M_PI / 2);
+    
+    mat4x4 translate;
+    mat4x4_identity(translate);
+    mat4x4_translate_in_place(translate, -0.5f, 0.0f, 0.0f);
 
-
+    //C    =              //A  *  //B
+    //result              //next  //previos
+    mat4x4_mul(transform, transform, translate);
+    //result => rotate +=> translate:  result = rotate * translate
 
     float verticies[] = {
         -0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f,
@@ -105,7 +111,10 @@ int main(int argc, char* argv[])
         //bglUniformMatrix4fv(bglGetUniformLocation(shaders.ID, "transform"), 1, GL_FALSE, &rotate[0][0]);
 
         useProgram();
-        setUniformMat4x4("transform", &rotate[0][0]);
+        setUniformMat4x4("transform", &transform[0][0]);
+        setAlphaTestMode("u_AlphaTest", bglIsEnabled(GL_ALPHA_TEST), "u_AlphaTestMode", bglGetAlphaParameterui(GL_ALPHA_TEST_FUNC), "u_AlphaReference",
+            bglGetAlphaParameterfi(GL_ALPHA_TEST_REF));
+
 
         bglBindBuffer(GL_ARRAY_BUFFER, VBO);
         bglBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);

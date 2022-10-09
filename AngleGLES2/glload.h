@@ -23,8 +23,8 @@ extern PFNGLVIEWPORTPROC glViewport;
 
 #ifdef GL_ES_VERSION_2_0
 
-extern void (__stdcall * bglDisable)(GLenum cap);
-extern void (__stdcall * bglEnable)(GLenum cap);
+extern void (__stdcall * bglesDisable)(GLenum cap);
+extern void (__stdcall * bglesEnable)(GLenum cap);
 extern GLenum(__stdcall * bglGetError)(void);
 
 // Buffer objects
@@ -175,7 +175,7 @@ extern void (__stdcall * bglHint)(GLenum target, GLenum mode);
 extern void (__stdcall * bglGetBooleanv)(GLenum pname, GLboolean * data);
 extern void (__stdcall * bglGetIntegerv)(GLenum pname, GLint * data);
 extern void (__stdcall * bglGetFloatv)(GLenum pname, GLfloat * data);
-extern GLboolean(__stdcall * bglIsEnabled)(GLenum cap);
+extern GLboolean(__stdcall * bglesIsEnabled)(GLenum cap);
 extern const GLubyte * (__stdcall * bglGetString)(GLenum name);
 
 // Framebuffer Objects
@@ -193,6 +193,21 @@ extern GLboolean(__stdcall * bglIsFramebuffer)(GLuint framebuffer);
 extern GLboolean(__stdcall * bglIsRenderbuffer)(GLuint renderbuffer);
 extern void (__stdcall * bglGetFramebufferAttachmentParameteriv)(GLenum target, GLenum attachment, GLenum pname, GLint * params);
 extern void (__stdcall * bglGetRenderbufferParameteriv)(GLenum target, GLenum pname, GLint * params);
+
+#define GL_ALPHA_TEST                     0x0BC0
+#define GL_ALPHA_TEST_FUNC                0x0BC1
+#define GL_ALPHA_TEST_REF                 0x0BC2
+
+extern GLboolean GL_ALPHA_TEST_IS_ENABLED;
+extern GLuint ALPHA_TEST_MODE;
+extern GLclampf ALPHA_TEST_REFERENCE;
+
+void bglAlphaFunc(GLenum func, GLclampf ref);
+void bglEnable(GLenum cap);
+void bglDisable(GLenum cap);
+GLboolean bglIsEnabled(GLenum cap);
+GLuint bglGetAlphaParameterui(GLenum cap);
+GLclampf bglGetAlphaParameterfi(GLenum cap);
 
 #endif
 

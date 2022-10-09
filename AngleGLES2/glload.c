@@ -18,8 +18,8 @@ PFNGLVIEWPORTPROC glViewport;
 #endif
 
 #ifdef GL_ES_VERSION_2_0
-void (__stdcall * bglDisable)(GLenum cap);
-void (__stdcall * bglEnable)(GLenum cap);
+void (__stdcall * bglesDisable)(GLenum cap);
+void (__stdcall * bglesEnable)(GLenum cap);
 GLenum(__stdcall * bglGetError)(void);
 
 // Buffer objects
@@ -170,7 +170,7 @@ void (__stdcall * bglHint)(GLenum target, GLenum mode);
 void (__stdcall * bglGetBooleanv)(GLenum pname, GLboolean * data);
 void (__stdcall * bglGetIntegerv)(GLenum pname, GLint * data);
 void (__stdcall * bglGetFloatv)(GLenum pname, GLfloat * data);
-GLboolean(__stdcall * bglIsEnabled)(GLenum cap);
+GLboolean(__stdcall * bglesIsEnabled)(GLenum cap);
 const GLubyte * (__stdcall * bglGetString)(GLenum name);
 
 // Framebuffer Objects
@@ -188,6 +188,59 @@ GLboolean(__stdcall * bglIsFramebuffer)(GLuint framebuffer);
 GLboolean(__stdcall * bglIsRenderbuffer)(GLuint renderbuffer);
 void (__stdcall * bglGetFramebufferAttachmentParameteriv)(GLenum target, GLenum attachment, GLenum pname, GLint * params);
 void (__stdcall * bglGetRenderbufferParameteriv)(GLenum target, GLenum pname, GLint * params);
+
+
+GLboolean GL_ALPHA_TEST_IS_ENABLED = GL_FALSE;
+GLuint ALPHA_TEST_MODE = GL_ALWAYS;
+GLclampf ALPHA_TEST_REFERENCE = 0.0f;
+
+
+void bglAlphaFunc(GLenum func, GLclampf ref)
+{
+    ALPHA_TEST_MODE = func;
+}
+
+void bglEnable(GLenum cap)
+{
+    if (cap != GL_ALPHA_TEST)
+        bglesEnable(cap);
+    else
+        GL_ALPHA_TEST_IS_ENABLED = GL_TRUE;
+}
+
+void bglDisable(GLenum cap)
+{
+    if (cap != GL_ALPHA_TEST)
+        bglesDisable(cap);
+    else
+        GL_ALPHA_TEST_IS_ENABLED = GL_TRUE;
+}
+
+GLboolean bglIsEnabled(GLenum cap)
+{
+    if (cap != GL_ALPHA_TEST)
+        return bglesIsEnabled(cap);
+    else
+        return GL_ALPHA_TEST_IS_ENABLED;
+}
+
+GLuint bglGetAlphaParameterui(GLenum cap)
+{
+    if (GL_ALPHA_TEST_FUNC)
+    {
+        return ALPHA_TEST_MODE;
+    }
+}
+
+GLclampf bglGetAlphaParameterfi(GLenum cap)
+{
+    if (GL_ALPHA_TEST_REF)
+    {
+        return ALPHA_TEST_REFERENCE;
+    }
+}
+
+
 #endif
 
 void* loadProc(const char* t)
@@ -222,8 +275,8 @@ void LoadFunctions()
 #endif
 
 #ifdef GL_ES_VERSION_2_0
-    bglDisable =                                loadProc("glDisable");
-    bglEnable =                                 loadProc("glEnable");
+    bglesDisable =                              loadProc("glDisable");
+    bglesEnable =                               loadProc("glEnable");
     bglGetError =                               loadProc("glGetError");
     bglGenBuffers =                             loadProc("glGenBuffers");
     bglDeleteBuffers =                          loadProc("glDeleteBuffers");
@@ -348,7 +401,7 @@ void LoadFunctions()
     bglGetBooleanv =                            loadProc("glGetBooleanv");
     bglGetIntegerv =                            loadProc("glGetIntegerv");
     bglGetFloatv =                              loadProc("glGetFloatv");
-    bglIsEnabled =                              loadProc("glIsEnabled");
+    bglesIsEnabled =                            loadProc("glIsEnabled");
     bglGetString =                              loadProc("glGetString");
     bglBindFramebuffer =                        loadProc("glBindFramebuffer");
     bglBindRenderbuffer =                       loadProc("glBindRenderbuffer");

@@ -87,6 +87,18 @@ void setUniformMat4x4(const char* name, const GLfloat* value)
 	bglUniformMatrix4fv(bglGetUniformLocation(program, name), 1, GL_FALSE, value);
 }
 
+void setBoolFlag(const char* name, const GLint value)
+{
+	bglUniform1i(bglGetUniformLocation(program, name), value);
+}
+
+void setAlphaTestMode(const char* isEnabled, const GLboolean enabled, const char* alphaTestMode, GLuint func, const char* refName, GLclampf ref)
+{
+	bglUniform1i(bglGetUniformLocation(program, isEnabled), enabled);
+	bglUniform1i(bglGetUniformLocation(program, alphaTestMode), func);
+	bglUniform1f(bglGetUniformLocation(program, refName), ref);
+}
+
 void checkCompileErrors(unsigned int shader, const char* type)
 {
 	int success;

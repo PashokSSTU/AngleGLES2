@@ -6,7 +6,8 @@
 extern "C" {
 #include "glload.h"
 #include "linmath.h"
-#include "SimpleCShader.h"
+#include "Shader.h"
+#include "matrix_transforms.h"
 }
 //#include "Shader.h"
 
@@ -25,7 +26,7 @@ int main(int argc, char* argv[])
     SDL_SetHint("SDL_HINT_OPENGL_ES_DRIVER", "1");
 
     SDL_Window* w = SDL_CreateWindow("test", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
-        640, 480, SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN);
+        640, 640, SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN);
 
     Assert(w);
 
@@ -42,22 +43,18 @@ int main(int argc, char* argv[])
     std::cout << "GL_RENDERER = " << bglGetString(GL_RENDERER) << std::endl;
     std::cout << "GL_RENDERER = " << bglGetString(GL_SHADING_LANGUAGE_VERSION) << std::endl;
 
-    //Shader shaders("Shaders/vertexSample.vsh", "Shaders/fragmentSample.fsh");
     loadShaders("Shaders/vertexSample.vsh", "Shaders/fragmentSample.fsh");
 
+    matrixStackInit();
+    bglMatrixMode(GL_MODELVIEW);
+    bglLoadIdentity();
+    bglRotatef((M_PI * 45.0f) / 180.0f, 0.0f, 1.0f, 0.0f);
+    bglTranslatef(0.0f, 0.0f, 0.0f);
+    bglMatrixMode(GL_PROJECTION);
+    bglLoadIdentity();
+    bglOrthof(-1, 1, -1, 1, -10, 10);
 
-    mat4x4 transform;
-    mat4x4_identity(transform);
-    mat4x4_rotate_Z(transform, transform, M_PI / 2);
-    
-    mat4x4 translate;
-    mat4x4_identity(translate);
-    mat4x4_translate_in_place(translate, -0.5f, 0.0f, 0.0f);
-
-    //C    =              //A  *  //B
-    //result              //next  //previos
-    mat4x4_mul(transform, transform, translate);
-    //result => rotate +=> translate:  result = rotate * translate
+    float fogcol[4] = { 1.0f, 1.0f, 0.0f, 1.0f };
 
     float verticies[] = {
         -0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 0.32f,
@@ -91,7 +88,17 @@ int main(int argc, char* argv[])
 
     bglBindBuffer(GL_ARRAY_BUFFER, 0);
 
+    bglEnable(GL_ALPHA_TEST);
+    bglAlphaFunc(GL_LESS, 0.32f);
+    bglDisable(GL_ALPHA_TEST);
     int running = 1;
+
+    bglEnable(GL_FOG);
+    bglFogf(GL_FOG_START, FULLVIS_BEGIN);
+    bglFogf(GL_FOG_END, FULLVIS_END);
+    bglFogf(GL_FOG_MODE, GL_LINEAR);
+    bglFogfv(GL_FOG_COLOR, fogcol);
+
     while (running)
     {
         SDL_Event ev;
@@ -107,28 +114,23 @@ int main(int argc, char* argv[])
         bglClearColor(0, 0, 0, 0);
         bglClear(GL_COLOR_BUFFER_BIT);
 
-        bglEnable(GL_ALPHA_TEST);
-
-        bglAlphaFunc(GL_LEQUAL, 0.32f);
-        
-        //shaders.use();
-        //bglUniformMatrix4fv(bglGetUniformLocation(shaders.ID, "transform"), 1, GL_FALSE, &rotate[0][0]);
-
         useProgram();
-        setUniformMat4x4("transform", &transform[0][0]);
+        setTransformMatrix();
         setAlphaTestMode("u_AlphaTest", bglIsEnabled(GL_ALPHA_TEST), "u_AlphaTestMode", bglGetAlphaParameterui(GL_ALPHA_TEST_FUNC), "u_AlphaReference",
             bglGetAlphaParameterfi(GL_ALPHA_TEST_REF));
-
+        setFogUniforms();
 
         bglBindBuffer(GL_ARRAY_BUFFER, VBO);
         bglBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+        
         bglDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
-        bglDisable(GL_ALPHA_TEST);
+        
        
 
         SDL_GL_SwapWindow(w);
     }
+    //bglDisable(GL_ALPHA_TEST);
     bglDeleteBuffers(1, &VBO);
 
     SDL_GL_DeleteContext(ctx);

@@ -203,26 +203,41 @@ void bglAlphaFunc(GLenum func, GLclampf ref)
 
 void bglEnable(GLenum cap)
 {
-    if (cap != GL_ALPHA_TEST)
-        bglesEnable(cap);
-    else
-        GL_ALPHA_TEST_IS_ENABLED = GL_TRUE;
+    switch (cap)
+    {
+    case GL_ALPHA_TEST:
+        return GL_ALPHA_TEST_IS_ENABLED = GL_TRUE;
+    case GL_FOG:
+        return fogParams.isEnabled = GL_TRUE;
+    default:
+        return bglesEnable(cap);
+    }
 }
 
 void bglDisable(GLenum cap)
 {
-    if (cap != GL_ALPHA_TEST)
-        bglesDisable(cap);
-    else
-        GL_ALPHA_TEST_IS_ENABLED = GL_TRUE;
+    switch (cap)
+    {
+    case GL_ALPHA_TEST:
+        return GL_ALPHA_TEST_IS_ENABLED = GL_FALSE;
+    case GL_FOG:
+        return fogParams.isEnabled = GL_FALSE;
+    default:
+        return bglesDisable(cap);
+    }
 }
 
 GLboolean bglIsEnabled(GLenum cap)
 {
-    if (cap != GL_ALPHA_TEST)
-        return bglesIsEnabled(cap);
-    else
+    switch (cap)
+    {
+    case GL_ALPHA_TEST:
         return GL_ALPHA_TEST_IS_ENABLED;
+    case GL_FOG:
+        return fogParams.isEnabled;
+    default:
+        return bglesIsEnabled(cap);
+    }
 }
 
 GLuint bglGetAlphaParameterui(GLenum cap)
@@ -241,6 +256,58 @@ GLclampf bglGetAlphaParameterfi(GLenum cap)
     }
 }
 
+FogParameters fogParams;
+
+void bglFogf(GLenum pname, GLfloat param)
+{
+    switch (pname)
+    {
+    case GL_FOG_MODE:
+        fogParams.equation = param;
+        break;
+
+    case GL_FOG_DENSITY:
+        fogParams.density = param;
+        break;
+
+    case GL_FOG_START:
+        fogParams.linearStart = param;
+        break;
+
+    case GL_FOG_END:
+        fogParams.linearEnd = param;
+        break;
+    }
+}
+
+void bglFogfv(GLenum pname, const GLfloat* params)
+{
+    switch (pname)
+    {
+    case GL_FOG_MODE:
+        fogParams.equation = (*params);
+        break;
+
+    case GL_FOG_DENSITY:
+        fogParams.density = (*params);
+        break;
+
+    case GL_FOG_START:
+        fogParams.linearStart = (*params);
+        break;
+
+    case GL_FOG_END:
+        fogParams.linearEnd = (*params);
+        break;
+
+    case GL_FOG_COLOR:
+        fogParams.fogColor[0] = params[0];
+        fogParams.fogColor[1] = params[1];
+        fogParams.fogColor[2] = params[2];
+        fogParams.fogColor[3] = params[3];
+        break;
+    }
+}
 
 #endif
 

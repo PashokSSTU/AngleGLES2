@@ -21,10 +21,10 @@
     <ClCompile Include="glload.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Shader.cpp">
+    <ClCompile Include="..\angle\include\matrix_transforms.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="SimpleCShader.c">
+    <ClCompile Include="shader.c">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -41,7 +41,7 @@
     <ClInclude Include="..\angle\include\linmath_test.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="SimpleCShader.h">
+    <ClInclude Include="..\angle\include\matrix_transforms.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

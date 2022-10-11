@@ -133,17 +133,17 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\angle\include\matrix_transforms.c" />
     <ClCompile Include="AngleGLES2.cpp" />
     <ClCompile Include="glload.c" />
-    <ClCompile Include="Shader.cpp" />
-    <ClCompile Include="SimpleCShader.c" />
+    <ClCompile Include="shader.c" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\angle\include\linmath.h" />
     <ClInclude Include="..\angle\include\linmath_test.h" />
+    <ClInclude Include="..\angle\include\matrix_transforms.h" />
     <ClInclude Include="glload.h" />
     <ClInclude Include="Shader.h" />
-    <ClInclude Include="SimpleCShader.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

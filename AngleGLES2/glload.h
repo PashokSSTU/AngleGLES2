@@ -194,9 +194,13 @@ extern GLboolean(__stdcall * bglIsRenderbuffer)(GLuint renderbuffer);
 extern void (__stdcall * bglGetFramebufferAttachmentParameteriv)(GLenum target, GLenum attachment, GLenum pname, GLint * params);
 extern void (__stdcall * bglGetRenderbufferParameteriv)(GLenum target, GLenum pname, GLint * params);
 
+
+//Alpha
 #define GL_ALPHA_TEST                     0x0BC0
 #define GL_ALPHA_TEST_FUNC                0x0BC1
 #define GL_ALPHA_TEST_REF                 0x0BC2
+#define FULLVIS_BEGIN					  2.9e30f
+#define FULLVIS_END						  3.0e30f
 
 extern GLboolean GL_ALPHA_TEST_IS_ENABLED;
 extern GLuint ALPHA_TEST_MODE;
@@ -208,6 +212,33 @@ void bglDisable(GLenum cap);
 GLboolean bglIsEnabled(GLenum cap);
 GLuint bglGetAlphaParameterui(GLenum cap);
 GLclampf bglGetAlphaParameterfi(GLenum cap);
+
+//Fog
+#define GL_FOG                            0x0B60
+#define GL_FOG_INDEX                      0x0B61
+#define GL_FOG_DENSITY                    0x0B62
+#define GL_FOG_START                      0x0B63
+#define GL_FOG_END                        0x0B64
+#define GL_FOG_MODE                       0x0B65
+#define GL_FOG_COLOR                      0x0B66
+#define GL_EXP                            0x0800
+#define GL_EXP2                           0x0801
+
+typedef struct _FogParameters
+{
+	GLclampf fogColor[4];
+	GLclampf linearStart;
+	GLclampf linearEnd;
+	GLclampf density;
+	GLclampf equation;
+	GLboolean isEnabled;
+
+} FogParameters;
+
+extern FogParameters fogParams;
+
+void bglFogf(GLenum pname, GLfloat param);
+void bglFogfv(GLenum pname, const GLfloat* params);
 
 #endif
 

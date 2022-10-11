@@ -1,4 +1,5 @@
-#include "SimpleCShader.h"
+#include "Shader.h"
+#include "matrix_transforms.h"
 #include <stdio.h>
 
 char* vertex;
@@ -7,12 +8,12 @@ GLuint program;
 
 const char* loadShaders(const char* vertex_shader, const char* fragment_shader)
 {
-	FILE *vsh, *fsh;
+	FILE* vsh, * fsh;
 	size_t v_length, f_length;
 	errno_t er;
 
 	// Read and save vertex shader (.vsh file) to char array
-	if((er = fopen_s(&vsh, vertex_shader, "rb+")) != 0)
+	if ((er = fopen_s(&vsh, vertex_shader, "rb+")) != 0)
 	{
 		printf("ERROR::SHADER::FILE_NOT_SUCCESFULLY_OPEN\n");
 	}
@@ -82,9 +83,10 @@ void useProgram()
 	bglUseProgram(program);
 }
 
-void setUniformMat4x4(const char* name, const GLfloat* value)
+void setTransformMatrix()
 {
-	bglUniformMatrix4fv(bglGetUniformLocation(program, name), 1, GL_FALSE, value);
+	bglUniformMatrix4fv(bglGetUniformLocation(program, "u_modelview"), 1, GL_FALSE, &((matrixStackModelView.Stack[matrixStackModelView.matrices - 1])[0][0]));
+	bglUniformMatrix4fv(bglGetUniformLocation(program, "u_projection"), 1, GL_FALSE, &((matrixStackProjection.Stack[matrixStackProjection.matrices - 1])[0][0]));
 }
 
 void setBoolFlag(const char* name, const GLint value)
@@ -97,6 +99,16 @@ void setAlphaTestMode(const char* isEnabled, const GLboolean enabled, const char
 	bglUniform1i(bglGetUniformLocation(program, isEnabled), enabled);
 	bglUniform1i(bglGetUniformLocation(program, alphaTestMode), func);
 	bglUniform1f(bglGetUniformLocation(program, refName), ref);
+}
+
+void setFogUniforms()
+{
+	bglUniform1fv(bglGetUniformLocation(program, "u_FogColor"), 4, fogParams.fogColor);
+	bglUniform1f(bglGetUniformLocation(program, "u_FogLinearStart"), fogParams.linearStart);
+	bglUniform1f(bglGetUniformLocation(program, "u_FogLinearEnd"), fogParams.linearEnd);
+	bglUniform1f(bglGetUniformLocation(program, "u_FogDensity"), fogParams.density);
+	bglUniform1f(bglGetUniformLocation(program, "u_FogEquation"), fogParams.equation);
+	bglUniform1f(bglGetUniformLocation(program, "u_FogIsEnabled"), fogParams.isEnabled);
 }
 
 void checkCompileErrors(unsigned int shader, const char* type)

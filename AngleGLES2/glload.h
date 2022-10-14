@@ -23,6 +23,10 @@ extern PFNGLVIEWPORTPROC glViewport;
 
 #ifdef GL_ES_VERSION_2_0
 
+typedef double GLdouble;
+typedef double GLclampd;
+
+
 extern void (__stdcall * bglesDisable)(GLenum cap);
 extern void (__stdcall * bglesEnable)(GLenum cap);
 extern GLenum(__stdcall * bglGetError)(void);
@@ -241,6 +245,26 @@ void bglFogf(GLenum pname, GLfloat param);
 void bglFogfv(GLenum pname, const GLfloat* params);
 
 #endif
+
+#define GL_QUADS 0x0007
+#define VBO_TEXTURE_ENABLE	0x0001
+#define VBO_TEXTURE_DISABLE 0x0000
+
+void BGL_Init();
+void BGL_SetVBO_TexMode(long mode);
+
+void bglBegin(GLenum mode);
+void bglEnd(void);
+void bglVertex2d(GLdouble x, GLdouble y);
+void bglVertex2f(GLfloat x, GLfloat y);
+void bglVertex2i(GLint x, GLint y);
+void bglVertex3d(GLdouble x, GLdouble y, GLdouble z);
+void bglVertex3f(GLfloat x, GLfloat y, GLfloat z);
+void bglVertex3fv(const GLfloat* v);
+void bglColor4f(GLfloat red, GLfloat green, GLfloat blue, GLfloat alpha);
+void bglColor4ub(GLubyte red, GLubyte green, GLubyte blue, GLubyte alpha);
+void bglTexCoord2d(GLdouble s, GLdouble t);
+void bglTexCoord2f(GLfloat s, GLfloat t);
 
 void* loadProc(const char* t);
 void LoadFunctions();

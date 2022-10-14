@@ -1,4 +1,6 @@
 #include "glload.h"
+#include "shader.h"
+#include "matrix_transforms.h"
 
 #ifdef GL_VERSION_ES_CM_1_0
 PFNGLGETSTRINGPROC glGetString;
@@ -310,6 +312,163 @@ void bglFogfv(GLenum pname, const GLfloat* params)
 }
 
 #endif
+
+struct BGL_Vertex {
+    GLfloat position[3];
+    GLfloat color[4];
+    GLfloat texCoord[2];
+};
+
+static struct BGL_Vertex bgl_immediateVertexBuilder;
+#define BGL_MAX_IMMEDIATE_VERTICES 16384
+static struct BGL_Vertex bgl_immediateVertices[BGL_MAX_IMMEDIATE_VERTICES];
+static GLsizei bgl_immediateVertexCount;
+static GLenum bgl_immediatePrimitive;
+static GLushort bgl_immediateQuadIndices[BGL_MAX_IMMEDIATE_VERTICES * 3 / 2];
+
+static long vboMode = VBO_TEXTURE_DISABLE;
+
+void BGL_SetVBO_TexMode(long mode)
+{
+    if(mode == VBO_TEXTURE_ENABLE || mode == VBO_TEXTURE_DISABLE)
+        vboMode = mode;
+}
+
+void BGL_Init()
+{
+    GLsizei quadVertex;
+
+    memset(&bgl_immediateVertexBuilder, 0, sizeof(bgl_immediateVertexBuilder));
+    bgl_immediateVertexCount = 0;
+    for (quadVertex = 0; quadVertex < (sizeof(bgl_immediateQuadIndices) / sizeof(bgl_immediateQuadIndices[0])); quadVertex += 6) {
+        GLushort quadIndex = quadVertex / 6 * 4;
+
+        bgl_immediateQuadIndices[quadVertex + 0] = quadIndex + 0;
+        bgl_immediateQuadIndices[quadVertex + 1] = quadIndex + 1;
+        bgl_immediateQuadIndices[quadVertex + 2] = quadIndex + 2;
+
+        bgl_immediateQuadIndices[quadVertex + 3] = quadIndex + 0;
+        bgl_immediateQuadIndices[quadVertex + 4] = quadIndex + 2;
+        bgl_immediateQuadIndices[quadVertex + 5] = quadIndex + 3;
+    }
+}
+
+void bglBegin(GLenum mode) {
+    SDL_Log("bglBegin\n");
+    bgl_immediatePrimitive = mode;
+    bgl_immediateVertexCount = 0;
+}
+
+void bglVertex3f(GLfloat x, GLfloat y, GLfloat z) {
+    SDL_Log("bglVertex3f\n");
+    bgl_immediateVertexBuilder.position[0] = x;
+    bgl_immediateVertexBuilder.position[1] = y;
+    bgl_immediateVertexBuilder.position[2] = z;
+    if (bgl_immediateVertexCount < BGL_MAX_IMMEDIATE_VERTICES) {
+        bgl_immediateVertices[bgl_immediateVertexCount++] = bgl_immediateVertexBuilder;
+    }
+}
+
+void bglVertex2d(GLdouble x, GLdouble y) {
+    SDL_Log("bglVertex2d\n");
+    bglVertex3f((GLfloat)x, (GLfloat)y, 0.0f);
+}
+
+void bglVertex2f(GLfloat x, GLfloat y) {
+    SDL_Log("bglVertex2f\n");
+    bglVertex3f(x, y, 0.0f);
+}
+
+void bglVertex2i(GLint x, GLint y) {
+    SDL_Log("bglVertex2i\n");
+    bglVertex3f((GLfloat)x, (GLfloat)y, 0.0f);
+}
+
+void bglVertex3d(GLdouble x, GLdouble y, GLdouble z) {
+    SDL_Log("bglVertex3d\n");
+    bglVertex3f((GLfloat)x, (GLfloat)y, (GLfloat)z);
+}
+
+void bglVertex3fv(const GLfloat* v) {
+    SDL_Log("bglVertex3fv\n");
+    bglVertex3f(v[0], v[1], v[2]);
+}
+
+void bglColor4ub(GLubyte red, GLubyte green, GLubyte blue, GLubyte alpha) {
+    SDL_Log("bglColor4ub\n");
+    bglColor4ub((GLfloat)(red / 255.0f), (GLfloat)(green / 255.0f), (GLfloat)(blue / 255.0f), (GLfloat)(alpha / 255.0f));
+}
+
+void bglColor4f(GLfloat red, GLfloat green, GLfloat blue, GLfloat alpha) {
+    SDL_Log("bglColor4f\n");
+    bgl_immediateVertexBuilder.color[0] = red;
+    bgl_immediateVertexBuilder.color[1] = green;
+    bgl_immediateVertexBuilder.color[2] = blue;
+    bgl_immediateVertexBuilder.color[3] = alpha;
+}
+
+void bglTexCoord2f(GLfloat s, GLfloat t) {
+    SDL_Log("bglTexCoord2f\n");
+    bgl_immediateVertexBuilder.texCoord[0] = s;
+    bgl_immediateVertexBuilder.texCoord[1] = t;
+}
+
+void bglTexCoord2d(GLdouble s, GLdouble t) {
+    SDL_Log("bglTexCoord2d\n");
+    bglTexCoord2f((GLfloat)s, (GLfloat)t);
+}
+
+void bglEnd() {
+    GLuint VBO, EBO;
+
+    bglGenBuffers(1, &VBO);
+    bglGenBuffers(1, &EBO);
+
+    bglBindBuffer(GL_ARRAY_BUFFER, VBO);
+    bglBufferData(GL_ARRAY_BUFFER, bgl_immediateVertexCount * sizeof(struct BGL_Vertex), bgl_immediateVertices, GL_STATIC_DRAW);
+
+    bglBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+    bglBufferData(GL_ELEMENT_ARRAY_BUFFER, (bgl_immediateVertexCount / 4 * 6) * sizeof(unsigned short), bgl_immediateQuadIndices, GL_STATIC_DRAW);
+
+    bglVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 9 * sizeof(float), (void*)0);
+    bglEnableVertexAttribArray(0);
+    SDL_Log("Attrib 0\n");
+
+    bglVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 9 * sizeof(float), (void*)(3 * sizeof(float)));
+    bglEnableVertexAttribArray(1);
+    SDL_Log("Attrib 1\n");
+
+    if (vboMode)
+    {
+        bglVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 9 * sizeof(float), (void*)(7 * sizeof(float)));
+        bglEnableVertexAttribArray(2);
+        SDL_Log("Attrib 2\n");
+    }
+
+    if (bgl_immediatePrimitive == GL_QUADS) {
+
+        useProgram();
+        setTransformMatrix();
+        setAlphaTestMode("u_AlphaTest", bglIsEnabled(GL_ALPHA_TEST), "u_AlphaTestMode", bglGetAlphaParameterui(GL_ALPHA_TEST_FUNC), "u_AlphaReference",
+            bglGetAlphaParameterfi(GL_ALPHA_TEST_REF));
+        setFogUniforms();
+
+        bglDrawElements(GL_TRIANGLES, bgl_immediateVertexCount / 4 * 6, GL_UNSIGNED_SHORT, bgl_immediateQuadIndices);
+        SDL_Log("bglDrawElements\n");
+    }
+    else {
+
+        useProgram();
+        setTransformMatrix();
+        setAlphaTestMode("u_AlphaTest", bglIsEnabled(GL_ALPHA_TEST), "u_AlphaTestMode", bglGetAlphaParameterui(GL_ALPHA_TEST_FUNC), "u_AlphaReference",
+            bglGetAlphaParameterfi(GL_ALPHA_TEST_REF));
+        setFogUniforms();
+
+        bglDrawArrays(bgl_immediatePrimitive, 0, bgl_immediateVertexCount);
+        SDL_Log("bglDrawArrays\n");
+    }
+    bgl_immediateVertexCount = 0;
+}
 
 void* loadProc(const char* t)
 {

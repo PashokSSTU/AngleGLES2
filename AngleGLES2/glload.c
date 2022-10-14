@@ -453,7 +453,7 @@ void bglEnd() {
             bglGetAlphaParameterfi(GL_ALPHA_TEST_REF));
         setFogUniforms();
 
-        bglDrawElements(GL_TRIANGLES, bgl_immediateVertexCount / 4 * 6, GL_UNSIGNED_SHORT, bgl_immediateQuadIndices);
+        bglDrawElements(GL_TRIANGLES, bgl_immediateVertexCount / 4 * 6, GL_UNSIGNED_SHORT, NULL);
         SDL_Log("bglDrawElements\n");
     }
     else {

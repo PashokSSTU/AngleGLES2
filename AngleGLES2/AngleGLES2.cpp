@@ -123,8 +123,8 @@ int main(int argc, char* argv[])
         //bglBindBuffer(GL_ARRAY_BUFFER, VBO);
         //bglBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
         
-        if (flag_render)
-        {
+        //if (flag_render)
+        //{
 
             bglBegin(GL_QUADS);
                 bglColor4f(1.0f, 0.0f, 0.0f, 1.0f);
@@ -141,7 +141,7 @@ int main(int argc, char* argv[])
             bglEnd();
 
             flag_render = false;
-        }
+        //}
 
         
        

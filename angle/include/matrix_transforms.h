@@ -42,6 +42,8 @@ void bglTranslatef(GLfloat x, GLfloat y, GLfloat z);
 void bglOrthof(GLfloat l, GLfloat r, GLfloat b, GLfloat t, GLfloat n, GLfloat f);
 void bglRotatef(GLfloat angle, GLfloat x, GLfloat y, GLfloat z);
 
+void bglLoadMatrixf(const float * m);
+
 void bglPushMatrix();
 void bglPopMatrix();
 

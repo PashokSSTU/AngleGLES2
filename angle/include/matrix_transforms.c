@@ -107,6 +107,54 @@ void bglRotatef(GLfloat angle, GLfloat x, GLfloat y, GLfloat z)
 	mat4x4_mul(transformMatrix, matrixStackProjection.Stack[matrixStackProjection.matrices - 1], matrixStackModelView.Stack[matrixStackModelView.matrices - 1]);
 }
 
+void bglLoadMatrixf(const float* m)
+{
+	switch (current_mode)
+	{
+	case GL_MODELVIEW:
+
+		(matrixStackModelView.Stack[matrixStackModelView.matrices - 1])[0][0] = m[0];
+		(matrixStackModelView.Stack[matrixStackModelView.matrices - 1])[1][0] = m[1];
+		(matrixStackModelView.Stack[matrixStackModelView.matrices - 1])[2][0] = m[2];
+		(matrixStackModelView.Stack[matrixStackModelView.matrices - 1])[3][0] = m[3];
+		(matrixStackModelView.Stack[matrixStackModelView.matrices - 1])[0][1] = m[4];
+		(matrixStackModelView.Stack[matrixStackModelView.matrices - 1])[1][1] = m[5];
+		(matrixStackModelView.Stack[matrixStackModelView.matrices - 1])[2][1] = m[6];
+		(matrixStackModelView.Stack[matrixStackModelView.matrices - 1])[3][1] = m[7];
+		(matrixStackModelView.Stack[matrixStackModelView.matrices - 1])[0][2] = m[8];
+		(matrixStackModelView.Stack[matrixStackModelView.matrices - 1])[1][2] = m[9];
+		(matrixStackModelView.Stack[matrixStackModelView.matrices - 1])[2][2] = m[10];
+		(matrixStackModelView.Stack[matrixStackModelView.matrices - 1])[3][2] = m[11];
+		(matrixStackModelView.Stack[matrixStackModelView.matrices - 1])[0][3] = m[12];
+		(matrixStackModelView.Stack[matrixStackModelView.matrices - 1])[1][3] = m[13];
+		(matrixStackModelView.Stack[matrixStackModelView.matrices - 1])[2][3] = m[14];
+		(matrixStackModelView.Stack[matrixStackModelView.matrices - 1])[3][3] = m[15];
+
+		break;
+
+	case GL_PROJECTION:
+
+		(matrixStackProjection.Stack[matrixStackProjection.matrices - 1])[0][0] = m[0];
+		(matrixStackProjection.Stack[matrixStackProjection.matrices - 1])[1][0] = m[1];
+		(matrixStackProjection.Stack[matrixStackProjection.matrices - 1])[2][0] = m[2];
+		(matrixStackProjection.Stack[matrixStackProjection.matrices - 1])[3][0] = m[3];
+		(matrixStackProjection.Stack[matrixStackProjection.matrices - 1])[0][1] = m[4];
+		(matrixStackProjection.Stack[matrixStackProjection.matrices - 1])[1][1] = m[5];
+		(matrixStackProjection.Stack[matrixStackProjection.matrices - 1])[2][1] = m[6];
+		(matrixStackProjection.Stack[matrixStackProjection.matrices - 1])[3][1] = m[7];
+		(matrixStackProjection.Stack[matrixStackProjection.matrices - 1])[0][2] = m[8];
+		(matrixStackProjection.Stack[matrixStackProjection.matrices - 1])[1][2] = m[9];
+		(matrixStackProjection.Stack[matrixStackProjection.matrices - 1])[2][2] = m[10];
+		(matrixStackProjection.Stack[matrixStackProjection.matrices - 1])[3][2] = m[11];
+		(matrixStackProjection.Stack[matrixStackProjection.matrices - 1])[0][3] = m[12];
+		(matrixStackProjection.Stack[matrixStackProjection.matrices - 1])[1][3] = m[13];
+		(matrixStackProjection.Stack[matrixStackProjection.matrices - 1])[2][3] = m[14];
+		(matrixStackProjection.Stack[matrixStackProjection.matrices - 1])[3][3] = m[15];
+
+		break;
+	}
+}
+
 void bglPushMatrix()
 {
 	switch (current_mode)

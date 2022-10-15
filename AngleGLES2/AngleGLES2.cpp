@@ -47,11 +47,22 @@ int main(int argc, char* argv[])
 
     loadShaders("Shaders/vertexSample.vsh", "Shaders/fragmentSample.fsh");
 
+    
+    float translate[] = {
+        1, 0, 0, 0.5,
+        0, 1, 0, 0.5,
+        0, 0, 1, 0,
+        0, 0, 0, 1
+    };
+    
     matrixStackInit();
     bglMatrixMode(GL_MODELVIEW);
     bglLoadIdentity();
-    bglRotatef((M_PI * 0.0f) / 180.0f, 0.0f, 1.0f, 0.0f);
-    bglTranslatef(0.0f, 0.0f, 0.0f);
+    //bglRotatef((M_PI * 0.0f) / 180.0f, 0.0f, 1.0f, 0.0f);
+    //bglTranslatef(0.0f, 0.0f, 0.0f);
+
+    bglLoadMatrixf(translate);
+
     bglMatrixMode(GL_PROJECTION);
     bglLoadIdentity();
     bglOrthof(-1, 1, -1, 1, -10, 10);

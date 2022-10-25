@@ -1,10 +1,13 @@
 #version 330 core
 layout (location = 0) in vec3 aPos;
 layout (location = 1) in vec4 aCol;
+layout (location = 2) in vec2 aTexCoord;
 out vec4 aColor;
+out vec2 TexCoord;
 flat out int AlphaTest;
 flat out int AlphaTestMode;
 out float AlphaReference;
+out float TextureIsEnabled;
 
 out vec4 FogColor;
 out float FogLinearStart;
@@ -28,6 +31,8 @@ uniform float u_FogDensity;
 uniform float u_FogEquation;
 uniform int u_FogIsEnabled;
 
+uniform float u_TextureIsEnabled;
+
 
 
 void main()
@@ -45,5 +50,8 @@ void main()
 	FogDensity = u_FogDensity;
 	FogEquation = u_FogEquation;
 	FogIsEnabled = u_FogIsEnabled;
+	
+	TexCoord = aTexCoord;
+	TextureIsEnabled = u_TextureIsEnabled;
 }
 

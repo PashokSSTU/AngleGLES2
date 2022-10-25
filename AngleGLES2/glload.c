@@ -196,6 +196,7 @@ GLboolean GL_ALPHA_TEST_IS_ENABLED = GL_FALSE;
 GLuint ALPHA_TEST_MODE = GL_ALWAYS;
 GLclampf ALPHA_TEST_REFERENCE = 0.0f;
 
+static long vboMode = VBO_TEXTURE_DISABLE;
 
 void bglAlphaFunc(GLenum func, GLclampf ref)
 {
@@ -211,6 +212,10 @@ void bglEnable(GLenum cap)
         return GL_ALPHA_TEST_IS_ENABLED = GL_TRUE;
     case GL_FOG:
         return fogParams.isEnabled = GL_TRUE;
+    case GL_TEXTURE_2D:
+        vboMode = VBO_TEXTURE_ENABLE;
+        bglesEnable(cap);
+        break;
     default:
         return bglesEnable(cap);
     }
@@ -224,6 +229,10 @@ void bglDisable(GLenum cap)
         return GL_ALPHA_TEST_IS_ENABLED = GL_FALSE;
     case GL_FOG:
         return fogParams.isEnabled = GL_FALSE;
+    case GL_TEXTURE_2D:
+        vboMode = VBO_TEXTURE_DISABLE;
+        bglesEnable(cap);
+        break;
     default:
         return bglesDisable(cap);
     }
@@ -326,8 +335,6 @@ static GLsizei bgl_immediateVertexCount;
 static GLenum bgl_immediatePrimitive;
 static GLushort bgl_immediateQuadIndices[BGL_MAX_IMMEDIATE_VERTICES * 3 / 2];
 
-static long vboMode = VBO_TEXTURE_DISABLE;
-
 void BGL_SetVBO_TexMode(long mode)
 {
     if(mode == VBO_TEXTURE_ENABLE || mode == VBO_TEXTURE_DISABLE)
@@ -424,6 +431,9 @@ void bglEnd() {
     bglGenBuffers(1, &VBO);
     bglGenBuffers(1, &EBO);
 
+    pushVBO_ID(1, VBO);
+    pushEBO_ID(1, EBO);
+
     bglBindBuffer(GL_ARRAY_BUFFER, VBO);
     bglBufferData(GL_ARRAY_BUFFER, bgl_immediateVertexCount * sizeof(struct BGL_Vertex), bgl_immediateVertices, GL_STATIC_DRAW);
 
@@ -442,6 +452,8 @@ void bglEnd() {
     {
         bglVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 9 * sizeof(float), (void*)(7 * sizeof(float)));
         bglEnableVertexAttribArray(2);
+        //bglActiveTexture(0);
+        //setTextureSampler("u_texture", 0);
         SDL_Log("Attrib 2\n");
     }
 
@@ -452,6 +464,7 @@ void bglEnd() {
         setAlphaTestMode("u_AlphaTest", bglIsEnabled(GL_ALPHA_TEST), "u_AlphaTestMode", bglGetAlphaParameterui(GL_ALPHA_TEST_FUNC), "u_AlphaReference",
             bglGetAlphaParameterfi(GL_ALPHA_TEST_REF));
         setFogUniforms();
+        setFloat("u_TextureIsEnabled", (GLfloat)vboMode);
 
         bglDrawElements(GL_TRIANGLES, bgl_immediateVertexCount / 4 * 6, GL_UNSIGNED_SHORT, NULL);
         SDL_Log("bglDrawElements\n");
@@ -463,6 +476,7 @@ void bglEnd() {
         setAlphaTestMode("u_AlphaTest", bglIsEnabled(GL_ALPHA_TEST), "u_AlphaTestMode", bglGetAlphaParameterui(GL_ALPHA_TEST_FUNC), "u_AlphaReference",
             bglGetAlphaParameterfi(GL_ALPHA_TEST_REF));
         setFogUniforms();
+        setFloat("u_TextureIsEnabled", (GLfloat)vboMode);
 
         bglDrawArrays(bgl_immediatePrimitive, 0, bgl_immediateVertexCount);
         SDL_Log("bglDrawArrays\n");

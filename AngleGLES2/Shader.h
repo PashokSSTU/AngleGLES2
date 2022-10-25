@@ -11,8 +11,10 @@ void useProgram();
 
 void setTransformMatrix();
 void setBoolFlag(const char* name, const GLint value);
+void setTextureSampler(const char* name, const GLuint sampler);
 void setAlphaTestMode(const char* isEnabled, const GLboolean enabled, const char* alphaTestMode, GLuint func, const char* refName, GLclampf ref);
 void setFogUniforms();
+void setFloat(const char* name, GLfloat value);
 
 void checkCompileErrors(unsigned int shader, const char* type);
 

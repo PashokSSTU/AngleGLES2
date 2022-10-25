@@ -8,8 +8,13 @@ extern "C" {
 #include "linmath.h"
 #include "Shader.h"
 #include "matrix_transforms.h"
+#include "glbuffers.h"
 }
 //#include "Shader.h"
+#include "stb_image.h"
+
+unsigned char* textureBuffer;
+int width, height, BPP;
 
 #define Assert(x) do {if (!(x)) __debugbreak(); } while (0)
 
@@ -37,6 +42,9 @@ int main(int argc, char* argv[])
     SDL_GL_SetSwapInterval(1);
 
     LoadFunctions();
+    glBufferObjectsInit();
+
+    textureBuffer = stbi_load("test_texture.png", &width, &height, &BPP, 4);
 
     BGL_Init();
 
@@ -47,21 +55,26 @@ int main(int argc, char* argv[])
 
     loadShaders("Shaders/vertexSample.vsh", "Shaders/fragmentSample.fsh");
 
-    
-    float translate[] = {
-        1, 0, 0, 0.5,
-        0, 1, 0, 0.5,
-        0, 0, 1, 0,
-        0, 0, 0, 1
-    };
+    bglEnable(GL_TEXTURE_2D);
+    GLuint texture;
+    bglGenTextures(1, &texture);
+    pushTEX_ID(1, texture);
+    bglBindBuffer(GL_TEXTURE_2D, texture);
+    bglTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    bglTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    bglTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    bglTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    bglTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, textureBuffer);
+    //bglDisable(GL_TEXTURE_2D);
+
+    if (textureBuffer)
+        stbi_image_free(textureBuffer);
     
     matrixStackInit();
     bglMatrixMode(GL_MODELVIEW);
     bglLoadIdentity();
     //bglRotatef((M_PI * 0.0f) / 180.0f, 0.0f, 1.0f, 0.0f);
     //bglTranslatef(0.0f, 0.0f, 0.0f);
-
-    bglLoadMatrixf(translate);
 
     bglMatrixMode(GL_PROJECTION);
     bglLoadIdentity();
@@ -139,15 +152,19 @@ int main(int argc, char* argv[])
 
             bglBegin(GL_QUADS);
                 bglColor4f(1.0f, 0.0f, 0.0f, 1.0f);
+                bglTexCoord2f(0.25f, 0.25f);
                 bglVertex2f(-0.5f, -0.5f);
 
                 bglColor4f(0.0f, 1.0f, 0.0f, 1.0f);
+                bglTexCoord2f(0.75f, 0.25f);
                 bglVertex2f(0.5f, -0.5f);
 
                 bglColor4f(0.0f, 0.0f, 1.0f, 1.0f);
+                bglTexCoord2f(0.75f, 0.75f);
                 bglVertex2f(0.5f, 0.5f);
 
                 bglColor4f(1.0f, 0.0f, 1.0f, 1.0f);
+                bglTexCoord2f(0.25f, 0.75f);
                 bglVertex2f(-0.5f, 0.5f);
             bglEnd();
 
@@ -158,6 +175,7 @@ int main(int argc, char* argv[])
        
 
         SDL_GL_SwapWindow(w);
+        glBufferObjectsClear();
     }
     //bglDisable(GL_ALPHA_TEST);
     //bglDeleteBuffers(1, &VBO);

@@ -61,7 +61,7 @@ const char* loadShaders(const char* vertex_shader, const char* fragment_shader)
 	fragment_ID = bglCreateShader(GL_FRAGMENT_SHADER);
 	bglShaderSource(fragment_ID, 1, (const GLchar**)&fragment, NULL);
 	bglCompileShader(fragment_ID);
-	checkCompileErrors(fragment_ID, "VERTEX");
+	checkCompileErrors(fragment_ID, "FRAGMENT");
 
 	free(vertex);
 	free(fragment);
@@ -94,6 +94,11 @@ void setBoolFlag(const char* name, const GLint value)
 	bglUniform1i(bglGetUniformLocation(program, name), value);
 }
 
+void setTextureSampler(const char* name, const GLuint sampler)
+{
+	bglUniform1i(bglGetUniformLocation(program, name), sampler);
+}
+
 void setAlphaTestMode(const char* isEnabled, const GLboolean enabled, const char* alphaTestMode, GLuint func, const char* refName, GLclampf ref)
 {
 	bglUniform1i(bglGetUniformLocation(program, isEnabled), enabled);
@@ -109,6 +114,11 @@ void setFogUniforms()
 	bglUniform1f(bglGetUniformLocation(program, "u_FogDensity"), fogParams.density);
 	bglUniform1f(bglGetUniformLocation(program, "u_FogEquation"), fogParams.equation);
 	bglUniform1f(bglGetUniformLocation(program, "u_FogIsEnabled"), fogParams.isEnabled);
+}
+
+void setFloat(const char* name, GLfloat value)
+{
+	bglUniform1f(bglGetUniformLocation(program, name), value);
 }
 
 void checkCompileErrors(unsigned int shader, const char* type)

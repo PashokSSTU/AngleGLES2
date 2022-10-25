@@ -6,6 +6,10 @@ in float FogLinearEnd;
 in float FogDensity;
 in float FogEquation;
 flat in int FogIsEnabled;
+in float TextureIsEnabled;
+
+uniform sampler2D u_texture;
+in vec2 TexCoord;
 
 float getFogFactor(float fogCoordinate);
 
@@ -38,7 +42,12 @@ in vec4 EyeSpacePosition;
 
 void main()
 {
-	vec4 outputColor; 
+	vec4 outputColor;
+	vec4 inputColor = aColor;
+	if(TextureIsEnabled == 1)
+	{
+		inputColor = texture(u_texture, TexCoord);
+	}
 	if(AlphaTest == 1)
 	{
 		switch(AlphaTestMode)
@@ -48,9 +57,9 @@ void main()
 			break;
 				
 			case 513:
-				if(aColor.a < AlphaReference)
+				if(inputColor.a < AlphaReference)
 				{
-					outputColor = aColor;
+					outputColor = inputColor;
 				}
 				else
 				{
@@ -59,9 +68,9 @@ void main()
 			break;
 			
 			case 514:
-				if(aColor.a == AlphaReference)
+				if(inputColor.a == AlphaReference)
 				{
-					outputColor = aColor;
+					outputColor = inputColor;
 				}
 				else
 				{
@@ -70,9 +79,9 @@ void main()
 			break;
 			
 			case 515:
-				if(aColor.a <= AlphaReference)
+				if(inputColor.a <= AlphaReference)
 				{
-					outputColor = aColor;
+					outputColor = inputColor;
 				}
 				else
 				{
@@ -81,9 +90,9 @@ void main()
 			break;
 			
 			case 516:
-				if(aColor.a > AlphaReference)
+				if(inputColor.a > AlphaReference)
 				{
-					outputColor = aColor;
+					outputColor = inputColor;
 				}
 				else
 				{
@@ -92,9 +101,9 @@ void main()
 			break;
 			
 			case 517:
-				if(aColor.a != AlphaReference)
+				if(inputColor.a != AlphaReference)
 				{
-					outputColor = aColor;
+					outputColor = inputColor;
 				}
 				else
 				{
@@ -103,9 +112,9 @@ void main()
 			break;
 			
 			case 518:
-				if(aColor.a >= AlphaReference)
+				if(inputColor.a >= AlphaReference)
 				{
-					outputColor = aColor;
+					outputColor = inputColor;
 				}
 				else
 				{
@@ -114,13 +123,13 @@ void main()
 			break;
 			
 			case 519:
-				outputColor = aColor;
+				outputColor = inputColor;
 			break;
 		}
 	}
 	else
 	{
-		outputColor = aColor;
+		outputColor = inputColor;
 	}
 	
 	if(FogIsEnabled == 1)

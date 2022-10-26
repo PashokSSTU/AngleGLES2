@@ -7,7 +7,7 @@ out vec2 TexCoord;
 flat out int AlphaTest;
 flat out int AlphaTestMode;
 out float AlphaReference;
-out float TextureIsEnabled;
+flat out int TextureIsEnabled;
 
 out vec4 FogColor;
 out float FogLinearStart;
@@ -31,7 +31,7 @@ uniform float u_FogDensity;
 uniform float u_FogEquation;
 uniform int u_FogIsEnabled;
 
-uniform float u_TextureIsEnabled;
+uniform int u_TextureIsEnabled;
 
 
 

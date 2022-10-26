@@ -403,7 +403,7 @@ void bglVertex3fv(const GLfloat* v) {
 
 void bglColor4ub(GLubyte red, GLubyte green, GLubyte blue, GLubyte alpha) {
     SDL_Log("bglColor4ub\n");
-    bglColor4ub((GLfloat)(red / 255.0f), (GLfloat)(green / 255.0f), (GLfloat)(blue / 255.0f), (GLfloat)(alpha / 255.0f));
+    bglColor4f((GLfloat)(red / 255.0f), (GLfloat)(green / 255.0f), (GLfloat)(blue / 255.0f), (GLfloat)(alpha / 255.0f));
 }
 
 void bglColor4f(GLfloat red, GLfloat green, GLfloat blue, GLfloat alpha) {
@@ -464,7 +464,7 @@ void bglEnd() {
         setAlphaTestMode("u_AlphaTest", bglIsEnabled(GL_ALPHA_TEST), "u_AlphaTestMode", bglGetAlphaParameterui(GL_ALPHA_TEST_FUNC), "u_AlphaReference",
             bglGetAlphaParameterfi(GL_ALPHA_TEST_REF));
         setFogUniforms();
-        setFloat("u_TextureIsEnabled", (GLfloat)vboMode);
+        setBoolFlag("u_TextureIsEnabled", (GLuint)vboMode);
 
         bglDrawElements(GL_TRIANGLES, bgl_immediateVertexCount / 4 * 6, GL_UNSIGNED_SHORT, NULL);
         SDL_Log("bglDrawElements\n");
@@ -476,7 +476,7 @@ void bglEnd() {
         setAlphaTestMode("u_AlphaTest", bglIsEnabled(GL_ALPHA_TEST), "u_AlphaTestMode", bglGetAlphaParameterui(GL_ALPHA_TEST_FUNC), "u_AlphaReference",
             bglGetAlphaParameterfi(GL_ALPHA_TEST_REF));
         setFogUniforms();
-        setFloat("u_TextureIsEnabled", (GLfloat)vboMode);
+        setBoolFlag("u_TextureIsEnabled", (GLuint)vboMode);
 
         bglDrawArrays(bgl_immediatePrimitive, 0, bgl_immediateVertexCount);
         SDL_Log("bglDrawArrays\n");

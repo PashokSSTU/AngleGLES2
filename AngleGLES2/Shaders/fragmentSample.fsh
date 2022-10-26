@@ -6,7 +6,7 @@ in float FogLinearEnd;
 in float FogDensity;
 in float FogEquation;
 flat in int FogIsEnabled;
-in float TextureIsEnabled;
+flat in int TextureIsEnabled;
 
 uniform sampler2D u_texture;
 in vec2 TexCoord;
